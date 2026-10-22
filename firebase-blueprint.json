@@ -1,0 +1,251 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user profile in the SaaS system",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "currentBusinessId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Business": {
+      "title": "Business",
+      "description": "Multi-tenant business entity registered in UBM SaaS",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "baseCurrency": { "type": "string" },
+        "currencySymbol": { "type": "string" },
+        "taxNumber": { "type": "string" },
+        "registrationNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "country": { "type": "string" },
+        "city": { "type": "string" },
+        "timezone": { "type": "string" },
+        "activeModules": { "type": "array" },
+        "subscription": { "type": "object" },
+        "certificate": { "type": "object" },
+        "branches": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "ownerId", "baseCurrency"]
+    },
+    "BusinessMember": {
+      "title": "BusinessMember",
+      "description": "Tenant membership and role assignment for staff",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string" },
+        "branches": { "type": "array" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "userId", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory product item for sales, purchases and stock management",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "branchId": { "type": "string" },
+        "name": { "type": "string" },
+        "sku": { "type": "string" },
+        "barcode": { "type": "string" },
+        "category": { "type": "string" },
+        "unit": { "type": "string" },
+        "costPrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "stockQuantity": { "type": "number" },
+        "reorderLevel": { "type": "number" },
+        "taxRate": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "name", "sellingPrice"]
+    },
+    "SalesOrder": {
+      "title": "SalesOrder",
+      "description": "Sales invoice or POS receipt transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "branchId": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "type": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "discountTotal": { "type": "number" },
+        "taxTotal": { "type": "number" },
+        "total": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "balanceDue": { "type": "number" },
+        "paymentStatus": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string" },
+        "cashierId": { "type": "string" },
+        "cashierName": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "orderNumber", "total"]
+    },
+    "Purchase": {
+      "title": "Purchase",
+      "description": "Purchase order and inventory restocking from supplier",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "branchId": { "type": "string" },
+        "purchaseNumber": { "type": "string" },
+        "supplierId": { "type": "string" },
+        "supplierName": { "type": "string" },
+        "items": { "type": "array" },
+        "total": { "type": "number" },
+        "amountPaid": { "type": "number" },
+        "balanceDue": { "type": "number" },
+        "paymentStatus": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "purchaseNumber", "total"]
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "Customer or supplier record with ledger balance and credit tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "companyName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "currentBalance": { "type": "number" },
+        "creditLimit": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "type", "name"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Operating expense record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "branchId": { "type": "string" },
+        "expenseNumber": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "paidTo": { "type": "string" },
+        "reference": { "type": "string" },
+        "date": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "amount", "category"]
+    },
+    "Account": {
+      "title": "Account",
+      "description": "General Ledger Chart of Accounts entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "subType": { "type": "string" },
+        "currentBalance": { "type": "number" },
+        "currency": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "businessId", "code", "name", "type"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable security and activity audit entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "businessId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "module": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "businessId", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Authenticated user profile data"
+    },
+    "/businesses/{businessId}": {
+      "schema": "Business",
+      "description": "Tenant business profile, certificate, and subscription state"
+    },
+    "/businessMembers/{memberId}": {
+      "schema": "BusinessMember",
+      "description": "Role-based access control and tenant membership"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Multi-tenant inventory products"
+    },
+    "/salesOrders/{orderId}": {
+      "schema": "SalesOrder",
+      "description": "Point-of-sale and invoice records"
+    },
+    "/purchases/{purchaseId}": {
+      "schema": "Purchase",
+      "description": "Purchases and supplier bills"
+    },
+    "/contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "Customers and suppliers"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Operating expenses and cash outflow"
+    },
+    "/accounts/{accountId}": {
+      "schema": "Account",
+      "description": "Chart of accounts and general ledger"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Tenant-scoped immutable audit log"
+    }
+  }
+}

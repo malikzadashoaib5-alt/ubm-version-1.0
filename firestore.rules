@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBusinessOwner(businessId) {
+      return isSignedIn() && (
+        request.auth.uid == get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerId ||
+        request.auth.token.email == 'ghaffarhonda15@gmail.com'
+      );
+    }
+
+    function isBusinessMember(businessId) {
+      return isSignedIn() && (
+        isBusinessOwner(businessId) ||
+        exists(/databases/$(database)/documents/businessMembers/$(businessId + '_' + request.auth.uid))
+      );
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isUser(userId);
+      allow delete: if false;
+    }
+
+    // Businesses
+    match /businesses/{businessId} {
+      allow read: if isSignedIn() || resource.data.certificate.status == 'issued';
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.token.email == 'ghaffarhonda15@gmail.com'
+      );
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Business Members (Team & Roles)
+    match /businessMembers/{memberId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (
+        isBusinessOwner(request.resource.data.businessId) ||
+        request.auth.token.email == 'ghaffarhonda15@gmail.com'
+      );
+      allow delete: if isSignedIn() && (
+        isBusinessOwner(resource.data.businessId) ||
+        request.auth.token.email == 'ghaffarhonda15@gmail.com'
+      );
+    }
+
+    // Products
+    match /products/{productId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update, delete: if isSignedIn() && isBusinessMember(resource.data.businessId);
+    }
+
+    // Sales Orders & POS
+    match /salesOrders/{orderId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow delete: if isSignedIn() && isBusinessOwner(resource.data.businessId);
+    }
+
+    // Purchases
+    match /purchases/{purchaseId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow delete: if isSignedIn() && isBusinessOwner(resource.data.businessId);
+    }
+
+    // Contacts (Customers & Suppliers)
+    match /contacts/{contactId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update, delete: if isSignedIn() && isBusinessMember(resource.data.businessId);
+    }
+
+    // Expenses
+    match /expenses/{expenseId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update, delete: if isSignedIn() && isBusinessMember(resource.data.businessId);
+    }
+
+    // Accounts
+    match /accounts/{accountId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update, delete: if isSignedIn() && isBusinessMember(resource.data.businessId);
+    }
+
+    // Immutable Audit Logs
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn() && isBusinessMember(resource.data.businessId);
+      allow create: if isSignedIn() && isBusinessMember(request.resource.data.businessId);
+      allow update, delete: if false; // Immutable audit trail
+    }
+  }
+}
